@@ -13,12 +13,6 @@ Script em Python para sugerir remanejamentos de estoque de embalagens entre unid
 - **Múltiplos de 5** e **mínimos por embalagem** (ex: envelope/caixa P = 10; caixa M/G = 5).
 - **Idempotência diária**: remove previamente as linhas do dia (`data = TODAY`) na tabela de destino antes de inserir.
 
-> A lógica original do algoritmo foi preservada; a principal mudança é **profissionalização de execução e segurança**.
-
-## Segurança (não subir senha para o GitHub)
-
-O script original tinha credenciais hardcoded no código. Isso não pode ir para repositório público/compartilhado.
-
 Use variáveis de ambiente:
 
 ### Opção A (recomendada): `DATABASE_URL`
