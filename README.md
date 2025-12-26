@@ -1,89 +1,95 @@
-# Remanejamento de Estruturas de Embalagem (IA/ML)
+Packaging Stock Rebalancing (AI/ML)
 
-Script em Python para sugerir remanejamentos de estoque de embalagens entre unidades, com regras de negócio e apoio de detecção de outliers (IsolationForest).
+Python script that suggests packaging stock transfers between units, using business rules and outlier detection support (IsolationForest).
 
-## Principais regras implementadas
+Key rules implemented
 
-- **Outliers (IsolationForest)**:
-  - Recebedoras outliers são processadas por último.
-  - Doadores outliers são evitados; entram apenas como “último recurso”.
-- **Estoque mínimo do doador**: preserva no mínimo `DONOR_KEEP_DAYS` dias de consumo (default: 60).
-- **Recomposição do recebedor**: calcula necessidade para recompor `COVER_TARGET_DAYS` dias (default: 30).
-- **Ruptura**: considera déficit quando `days_cover <= RUPTURE_THRESHOLD` (default: 3).
-- **Múltiplos de 5** e **mínimos por embalagem** (ex: envelope/caixa P = 10; caixa M/G = 5).
-- **Idempotência diária**: remove previamente as linhas do dia (`data = TODAY`) na tabela de destino antes de inserir.
+Outliers (IsolationForest):
 
-Use variáveis de ambiente:
+Outlier receivers are processed last.
 
-### Opção A (recomendada): `DATABASE_URL`
+Outlier donors are avoided; used only as a “last resort”.
 
-Exemplo:
+Minimum donor stock: keeps at least DONOR_KEEP_DAYS days of consumption (default: 60).
 
-```
-DATABASE_URL=postgresql+psycopg2://USER:SENHA@HOST:5432/DB
-```
+Receiver replenishment: computes the need to restore COVER_TARGET_DAYS days of coverage (default: 30).
 
-### Opção B: variáveis separadas
+Stockout risk: considers deficit when days_cover <= RUPTURE_THRESHOLD (default: 3).
 
-```
+Multiples of 5 and minimum quantities per package type (e.g., small envelope/box = 10; medium/large box = 5).
+
+Daily idempotency: deletes existing rows for the day (date = TODAY) from the target table before inserting new ones.
+
+Use environment variables:
+
+Option A (recommended): DATABASE_URL
+
+Example:
+
+DATABASE_URL=postgresql+psycopg2://USER:PASSWORD@HOST:5432/DB
+
+Option B: separate variables
 PG_HOST=...
 PG_PORT=5432
 PG_DB=postgres
 PG_USER=...
 PG_PASS=...
-```
 
-Crie um arquivo `.env` local (não versionado) e rode normalmente. Existe um `.env.example` no repositório.
 
-## Como rodar
+Create a local .env file (not versioned) and run normally. A .env.example is included in the repository.
 
-### 1) Criar venv e instalar dependências
+How to run
+1) Create a venv and install dependencies
 
 Windows (PowerShell):
 
-```
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-```
 
-### 2) Configurar `.env`
+2) Configure .env
 
-Copie:
+Copy:
 
-```
 copy .env.example .env
-```
 
-Edite o `.env` com seus dados.
 
-### 3) Executar
+Edit .env with your settings.
 
-```
+3) Execute
 python processa_remanejamentos.py
-```
 
-Dry-run (não grava no banco):
 
-```
+Dry-run (no DB writes):
+
 python processa_remanejamentos.py --dry-run
-```
 
-## Argumentos úteis
+Useful arguments
 
-- `--lookback-days 60`
-- `--cover-target-days 30`
-- `--donor-keep-days 60`
-- `--rupture-threshold 3`
-- `--only-prefixes "AC ,CE "`
-- `--target-table public.fato_estoque_remanejamento`
-- `--today 2025-12-23`
-- `--log-level INFO`
-- `--dry-run`
+--lookback-days 60
 
-## Estrutura do repositório
+--cover-target-days 30
 
-- `processa_remanejamentos.py` — script principal
-- `requirements.txt` — dependências
-- `.env.example` — exemplo de variáveis
-- `.gitignore` — evita versionar `.env`, venv, caches, etc.
+--donor-keep-days 60
+
+--rupture-threshold 3
+
+--only-prefixes "AC ,CE "
+
+--target-table public.fato_estoque_remanejamento
+
+--today 2025-12-23
+
+--log-level INFO
+
+--dry-run
+
+Repository structure
+
+processa_remanejamentos.py — main script
+
+requirements.txt — dependencies
+
+.env.example — environment variables template
+
+.gitignore — avoids versioning .env, venv, caches, etc.
